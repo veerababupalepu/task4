@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio & Projects Suite</title>
+  <style>
+    :root {
+      --primary: #4e54c8;
+      --secondary: #8f94fb;
+      --background: #f8f9fa;
+      --dark: #343a40;
+      --light: #fff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--background);
+      color: var(--dark);
+    }
+
+    header, footer {
+      background: var(--primary);
+      color: var(--light);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    nav a {
+      margin: 0 1rem;
+      color: var(--light);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    section {
+      padding: 2rem;
+      margin: 1rem;
+      background: var(--light);
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    .projects-grid, .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--background);
+      padding: 1rem;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .todo-input, .filter-group {
+      margin: 1rem 0;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    input, button, select {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    ul li {
+      margin: 0.5rem 0;
+      background: #e0e0e0;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 600px) {
+      nav a {
+        display: block;
+        margin: 0.5rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>My Portfolio Suite</h1>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section id="about">
+    <h2>About Me</h2>
+    <p>I'm a detail-oriented and curious developer passionate about building interactive, responsive web experiences and insightful dashboards. With hands-on experience in JavaScript, CSS, and tools like Power BI, I enjoy turning complex ideas into simple, usable, and visually compelling solutions.
+
+   I thrive on solving real-world problems — whether it's debugging tricky code, transforming messy data into clear visuals, or experimenting with creative media like AI voice edits. Always learning, always building — I believe in the power of tech to tell stories, simplify decisions, and create meaningful digital experiences.</p>
+  </section>
+
+  <section id="projects">
+    <h2>My Projects</h2>
+    <div class="projects-grid">
+      <div class="card">
+        <h3>To-Do App</h3>
+        <p>Organize your tasks with localStorage persistence.</p>
+        <input id="todoInput" placeholder="Add a task" />
+        <button onclick="addTodo()">Add</button>
+        <ul id="todoList"></ul>
+      </div>
+
+      <div class="card">
+        <h3>Product Page</h3>
+        <div class="filter-group">
+          <select id="categoryFilter" onchange="filterProducts()">
+            <option value="all">All Categories</option>
+            <option value="tech">Tech</option>
+            <option value="home">Home</option>
+          </select>
+
+          <select id="sortCriteria" onchange="sortProducts()">
+            <option value="rating">Sort by Rating</option>
+            <option value="price">Sort by Price</option>
+          </select>
+        </div>
+        <div class="products-grid" id="productContainer"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <p>Email: veerababupalepu549@gmail.com</p>
+    <p>GitHub: veerababu-palepu</p>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 My Portfolio</p>
+  </footer>
+
+  <script>
+    const todoInput = document.getElementById('todoInput');
+    const todoList = document.getElementById('todoList');
+
+    function loadTodos() {
+      const todos = JSON.parse(localStorage.getItem('todos')) || [];
+      todoList.innerHTML = '';
+      todos.forEach((todo, i) => {
+        const li = document.createElement('li');
+        li.textContent = todo;
+        li.onclick = () => removeTodo(i);
+        todoList.appendChild(li);
+      });
+    }
+
+    function addTodo() {
+      const todo = todoInput.value.trim();
+      if (todo) {
+        const todos = JSON.parse(localStorage.getItem('todos')) || [];
+        todos.push(todo);
+        localStorage.setItem('todos', JSON.stringify(todos));
+        todoInput.value = '';
+        loadTodos();
+      }
+    }
+
+    function removeTodo(index) {
+      const todos = JSON.parse(localStorage.getItem('todos')) || [];
+      todos.splice(index, 1);
+      localStorage.setItem('todos', JSON.stringify(todos));
+      loadTodos();
+    }
+
+    loadTodos();
+
+    // Product Filter & Sort
+    const products = [
+      { name: "Laptop", category: "tech", price: 1200, rating: 4.7 },
+      { name: "Vacuum", category: "home", price: 250, rating: 4.3 },
+      { name: "Monitor", category: "tech", price: 300, rating: 4.5 },
+      { name: "Blender", category: "home", price: 150, rating: 4.0 }
+    ];
+
+    let currentCategory = "all";
+    let currentSort = "rating";
+
+    function renderProducts() {
+      const container = document.getElementById('productContainer');
+      let filtered = currentCategory === "all" ? products : products.filter(p => p.category === currentCategory);
+
+      if (currentSort === "price") {
+        filtered.sort((a, b) => a.price - b.price);
+      } else {
+        filtered.sort((a, b) => b.rating - a.rating);
+      }
+
+      container.innerHTML = filtered.map(p => `
+        <div class="card">
+          <h4>${p.name}</h4>
+          <p>Category: ${p.category}</p>
+          <p>Price: $${p.price}</p>
+          <p>Rating: ${p.rating}</p>
+        </div>
+      `).join('');
+    }
+
+    function filterProducts() {
+      currentCategory = document.getElementById("categoryFilter").value;
+      renderProducts();
+    }
+
+    function sortProducts() {
+      currentSort = document.getElementById("sortCriteria").value;
+      renderProducts();
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
